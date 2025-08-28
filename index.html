@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mood Journal</title>
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XWL93Y6308"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XWL93Y6308', {
+      'page_path': '/Mood-Journal/'
+    });
+  </script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #89f7fe, #66a6ff);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+      transition: background 0.5s;
+    }
+    h1 { color: #333; }
+    select, textarea, button {
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+    button {
+      background: #66a6ff;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover { background: #558de8; }
+    .output, .past-entries {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f4f4f4;
+      border-radius: 8px;
+      text-align: left;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .entry {
+      border-bottom: 1px solid #ccc;
+      padding: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="container">
+    <h1>🌸 Mood Journal</h1>
+    <label for="mood">How are you feeling today?</label>
+    <select id="mood">
+      <option value="happy">😊 Happy</option>
+      <option value="sad">😔 Sad</option>
+      <option value="angry">😡 Angry</option>
+      <option value="stressed">😣 Stressed</option>
+      <option value="calm">😌 Calm</option>
+    </select>
+    <textarea id="entry" rows="4" placeholder="Write about your day..."></textarea>
+
+    <button onclick="saveEntry()">Save Entry</button>
+
+    <div class="output" id="output"></div>
+
+    <h3>📝 Past Entries:</h3>
+    <div class="past-entries" id="pastEntries"></div>
+  </div>
+
+  <script>
+    const quotes = {
+      happy: ["Keep shining, the world needs your light!", "Happiness is contagious, spread it around."],
+      sad: ["This too shall pass. Stay strong ❤️", "Every storm runs out of rain."],
+      angry: ["Take a deep breath. Calmness is power.", "Anger doesn’t solve problems, peace does."],
+      stressed: ["Breathe. Relax. You’ve got this!", "One step at a time, progress is progress."],
+      calm: ["Peace begins with a smile.", "Calm mind brings inner strength."]
+    };
+
+    const songs = {
+      happy: ["Happy - Pharrell Williams", "Good Life - OneRepublic"],
+      sad: ["Fix You - Coldplay", "Someone Like You - Adele"],
+      angry: ["Numb - Linkin Park", "Break Stuff - Limp Bizkit"],
+      stressed: ["Weightless - Marconi Union", "Breathe Me - Sia"],
+      calm: ["Sunflower - Rex Orange County", "Ocean Eyes - Billie Eilish"]
+    };
+
+    const moodColors = {
+      happy: "#FFF9C4",
+      sad: "#BBDEFB",
+      angry: "#FFCDD2",
+      stressed: "#FFE0B2",
+      calm: "#C8E6C9"
+    };
+
+    function saveEntry() {
+      let mood = document.getElementById('mood').value;
+      let entry = document.getElementById('entry').value;
+      if(entry.trim() === "") {
+        alert("Please write something before saving!");
+        return;
+      }
+      let quote = quotes[mood][Math.floor(Math.random() * quotes[mood].length)];
+      let song = songs[mood][Math.floor(Math.random() * songs[mood].length)];
+
+      document.getElementById('output').innerHTML = `
+        <h3>Your Journal Entry:</h3>
+        <p><b>Mood:</b> ${mood}</p>
+        <p><b>Note:</b> ${entry}</p>
+        <hr>
+        <p><b>Motivational Quote:</b> "${quote}"</p>
+        <p><b>Suggested Song:</b> 🎶 ${song}</p>
+      `;
+
+      // Change container background based on mood
+      document.getElementById('container').style.background = moodColors[mood];
+
+      // Save entry to local storage
+      let journal = JSON.parse(localStorage.getItem('journal')) || [];
+      journal.push({ mood, entry, date: new Date().toLocaleString() });
+      localStorage.setItem('journal', JSON.stringify(journal));
+
+      // Clear textarea
+      document.getElementById('entry').value = "";
+
+      // Refresh past entries
+      displayPastEntries();
+    }
+
+    function displayPastEntries() {
+      let journal = JSON.parse(localStorage.getItem('journal')) || [];
+      let pastEntriesDiv = document.getElementById('pastEntries');
+      pastEntriesDiv.innerHTML = "";
+      journal.slice().reverse().forEach(item => {
+        pastEntriesDiv.innerHTML += `
+          <div class="entry">
+            <p><b>Date:</b> ${item.date}</p>
+            <p><b>Mood:</b> ${item.mood}</p>
+            <p>${item.entry}</p>
+          </div>
+        `;
+      });
+    }
+
+    // Display past entries on page load
+    window.onload = displayPastEntries;
+  </script>
+</body>
+</html>
